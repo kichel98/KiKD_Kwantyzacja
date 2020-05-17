@@ -1,4 +1,4 @@
-
+// author: Piotr Andrzejewski
 import kotlin.math.abs
 
 
@@ -66,7 +66,7 @@ class VectorQuantization {
 
     private fun doubleCodebookSize(codes: MutableList<Color>, regions: MutableList<MutableSet<Pixel>>) {
         val size = codes.size
-        val perturbation = Color(10u, 10u, 10u)
+        val perturbation = Color((0..255).random().toUByte(), (0..255).random().toUByte(), (0..255).random().toUByte())
         for (i in 0..size) {
             codes.add(codes[i] + perturbation)
             regions.add(mutableSetOf())

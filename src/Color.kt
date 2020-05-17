@@ -1,3 +1,4 @@
+// author: Piotr Andrzejewski
 @ExperimentalUnsignedTypes
 data class Color(var r: UByte, var g: UByte, var b: UByte) {
     operator fun plus(color: Color): Color {

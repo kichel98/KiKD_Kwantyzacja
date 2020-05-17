@@ -1,3 +1,4 @@
+// author: Piotr Andrzejewski
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
