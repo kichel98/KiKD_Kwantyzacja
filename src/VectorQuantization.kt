@@ -1,10 +1,12 @@
 // author: Piotr Andrzejewski
 import kotlin.math.abs
+import kotlin.math.log10
+import kotlin.math.pow
 
 
 @ExperimentalUnsignedTypes
 class VectorQuantization {
-    fun LBGAlgorithm(image: ImageMatrix, colorsNumber: Byte): ImageMatrix {
+    fun LBGAlgorithm(image: ImageMatrix, maxCodebookBits: Byte): ImageMatrix {
         val pixels = flatten(image.pixels)
         val codes = mutableListOf<Color>()
         val quantizationRegions = mutableListOf<MutableSet<Pixel>>() // check if Set removes colors with the same rgb!
@@ -17,7 +19,7 @@ class VectorQuantization {
         var codebookBits = 0 // counter
 
         while (true) {
-            if (codebookBits < colorsNumber) {
+            if (codebookBits < maxCodebookBits) {
                 doubleCodebookSize(codes, quantizationRegions)
                 codebookBits++
             }
@@ -31,18 +33,30 @@ class VectorQuantization {
             }
             improveCodes(codes, quantizationRegions)
         }
-        changeOriginalPixelsToTheirRepresentatives(codes, quantizationRegions, image)
+        changeOriginalPixelsToTheirCodesAndCalcStats(codes, quantizationRegions, image)
         return image
     }
 
-    private fun changeOriginalPixelsToTheirRepresentatives(codes: MutableList<Color>,
-                                                           regions: MutableList<MutableSet<Pixel>>,
-                                                           image: ImageMatrix) {
+    private fun changeOriginalPixelsToTheirCodesAndCalcStats(codes: MutableList<Color>,
+                                                             regions: MutableList<MutableSet<Pixel>>,
+                                                             image: ImageMatrix) {
+        var errorSum = 0.0
+        var snrSum = 0.0
         codes.zip(regions) { code, region ->
             region.forEach { pixel ->
+                errorSum += taxicabDistance(image.pixels[pixel.row][pixel.column].color, code).toDouble()
+                    .pow(2)
+                snrSum += taxicabDistance(image.pixels[pixel.row][pixel.column].color, Color(0u, 0u, 0u))
+                    .toDouble().pow(2)
                 image.pixels[pixel.row][pixel.column].color = code
             }
         }
+        val mse = errorSum / (image.height * image.width)
+        val snr = 10 * log10((snrSum / (image.height * image.width)) / mse)
+        println("Blad sredniokwadratowy:")
+        println(errorSum / (image.height * image.width))
+        println("Stosunek sygnalu do szumu (dB):")
+        print(snr)
     }
 
     private fun updateRegions(codes: MutableList<Color>, regions: MutableList<MutableSet<Pixel>>, pixels: List<Pixel>) {
