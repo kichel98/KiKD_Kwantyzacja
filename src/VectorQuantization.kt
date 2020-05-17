@@ -14,7 +14,7 @@ class VectorQuantization {
         codes.add(avgOfColors(pixels))
         quantizationRegions.add(pixels.toMutableSet())
         var previousDistortion = calculateDistortion(codes, quantizationRegions, pixels.size)
-        var codebookBits = 1 // counter
+        var codebookBits = 0 // counter
 
         while (true) {
             if (codebookBits < colorsNumber) {
@@ -66,8 +66,8 @@ class VectorQuantization {
 
     private fun doubleCodebookSize(codes: MutableList<Color>, regions: MutableList<MutableSet<Pixel>>) {
         val size = codes.size
-        val perturbation = Color((0..255).random().toUByte(), (0..255).random().toUByte(), (0..255).random().toUByte())
-        for (i in 0..size) {
+        val perturbation = Color((-10..10).random().toUByte(), (-10..10).random().toUByte(), (-10..10).random().toUByte())
+        for (i in 0 until size) {
             codes.add(codes[i] + perturbation)
             regions.add(mutableSetOf())
         }

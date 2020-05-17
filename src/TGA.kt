@@ -14,7 +14,7 @@ class TGA : ImageFormat {
             val heightBytes = addNBytesToHeaderOrFooter(it, true, 2)
             val width = byteArrayToInt(widthBytes.asUByteArray())
             val height = byteArrayToInt(heightBytes.asUByteArray())
-            addNBytesToHeaderOrFooter(it, true, 22)
+            addNBytesToHeaderOrFooter(it, true, 2)
             val pixels: Array<Array<Pixel>> = Array(height) { i ->
                 Array(width) { j ->
                     Pixel(i, j, Color(0u, 0u, 0u))
